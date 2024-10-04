@@ -59,7 +59,11 @@ const config: Config = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+		fontFamily: {
+			oswald: ['Oswald', 'sans-serif'],
+			sourceSerif: ['Source Serif 4', 'sans-serif'],
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
