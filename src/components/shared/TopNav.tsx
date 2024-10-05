@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { use } from "react";
 import {
   Sheet,
   SheetContent,
@@ -11,10 +11,13 @@ import HamburgerMenuIcon from "@/assets/svg/hamburger.svg";
 import LogoWide from "@/assets/svg/logo-wide.svg";
 import TopNavLinks from "./TopNavLinks";
 
+import { useState, useEffect } from "react";
 import { checkUserLoggedInClient, logoutUser } from "@/lib/api";
+import { get } from "http";
 
 const TopNav = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function checkLoginStatus() {

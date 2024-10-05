@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
+import cookie from 'cookie';
 
 // Define the shape of the user data returned from WordPress
 interface UserData {
@@ -15,17 +16,21 @@ interface ErrorResponse {
 }
 
 // Define the handler for the protected route
-export async function GET(req: NextRequest) {
-  // Parse cookies from the request
-  const token = req.cookies.get('token')?.value;
+export default async function someProtectedRoute(
+  req: NextApiRequest,
+  res: NextApiResponse<UserData | ErrorResponse> // Specify possible response types
+) {
+  // Parse cookies from the request headers
+  const cookies = cookie.parse(req.headers.cookie || '');
+  const token = cookies.token;
 
   // If no token is found, return a 401 Unauthorized response
   if (!token) {
-    return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
+    return res.status(401).json({ message: 'Not authenticated' });
   }
 
   try {
-    // Use the token to make authenticated requests
+    // You can now use the token to make authenticated requests
     const response = await fetch('https://biaillustration.com/wp-json/wp/v2/users/me', {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -36,12 +41,12 @@ export async function GET(req: NextRequest) {
 
     // If the request was successful, return the data
     if (response.ok) {
-      return NextResponse.json(data, { status: 200 });
+      return res.status(200).json(data);
     } else {
-      return NextResponse.json({ message: 'Failed to fetch user data' }, { status: response.status });
+      return res.status(response.status).json({ message: 'Failed to fetch user data' });
     }
   } catch (error) {
     // If something goes wrong, return a 500 status
-    return NextResponse.json({ message: 'Server error', error: (error as Error).message }, { status: 500 });
+    return res.status(500).json({ message: 'Server error', error: (error as Error).message });
   }
 }
